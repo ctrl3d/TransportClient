@@ -20,8 +20,22 @@ namespace work.ctrl3d
     
         public event Action<NetworkEndpoint> OnConnected;
         public event Action<NetworkConnection> OnDisconnected;
-        public event Action<byte[], NetworkConnection> OnDataReceived;
+        public event Action<byte[], NetworkConnection> OnReceived;
     
+        protected string Address
+        {
+            get => address;
+            set => address = value;
+        }
+
+        protected ushort Port
+        {
+            get => port;
+            set => port = value;
+        }
+        
+        protected NetworkConnection Connection => _connection;
+        
         private void Start()
         {
             _driver = NetworkDriver.Create();
@@ -78,7 +92,7 @@ namespace work.ctrl3d
 
                         var bytes = new NativeArray<byte>(length, Allocator.Temp);
                         stream.ReadBytes(bytes);
-                        OnDataReceived?.Invoke(bytes.ToArray(), _connection);
+                        OnReceived?.Invoke(bytes.ToArray(), _connection);
                         bytes.Dispose();
                         break;
                     }
